@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tugas Javascript</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-image: linear-gradient(to bottom right, #6A85B6, #bac8e0);
+    }
+    .container {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: rgba(255, 255, 255, 0.8);
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+        text-align: center;
+    }
+    form {
+        margin-bottom: 20px;
+    }
+    label {
+        font-weight: bold;
+    }
+    input[type="number"],
+    input[type="text"],
+    button {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+    }
+    button {
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+    button:hover {
+        background-color: #45a049;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+    }
+    th {
+        background-color: #f2f2f2;
+    }
+    .edit-button, .update-button, .cancel-button {
+        background-color: #008CBA;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        padding: 8px 10px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 14px;
+        margin: 2px;
+    }
+    .update-button, .cancel-button {
+        display: none;
+    }
+</style>
+</head>
+<body>
+<div class="container">
+    <h1>Form Mahasiswa</h1>
+    <form id="studentForm">
+        <label for="nim">NIM:</label><br>
+        <input type="number" id="nim" name="nim" required><br>
+        <label for="name">Nama:</label><br>
+        <input type="text" id="name" name="name" required><br><br>
+        <button type="button" id="saveButton" onclick="saveStudent()">Save</button>
+        <button type="button" id="updateButton" class="update-button" onclick="updateStudent()">Update</button>
+        <button type="button" id="cancelButton" class="cancel-button" onclick="cancelEdit()">Cancel</button>
+    </form>
+
+    <table id="studentTable">
+        <thead>
+            <tr>
+                <th>NIM</th>
+                <th>Nama</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+<script>
+    var arrStudent = [];
+
+    function Student(nim, name) {
+        this.nim = nim;
+        this.name = name;
+    }
+
+    function saveStudent() {
+        var studentForm = document.getElementById("studentForm");
+        var nim = document.getElementById("nim").value;
+        var name = document.getElementById("name").value;
+
+        var student = new Student(nim, name);
+        arrStudent.push(student);
+
+        studentForm.reset();
+        showStudent(student);
+    }
+
+    function showStudent(student) {
+        var tbody = document.querySelector("#studentTable tbody");
+        var tr = document.createElement("tr");
+
+        var tdNim = document.createElement("td");
+        tdNim.textContent = student.nim;
+        tr.appendChild(tdNim);
+
+        var tdName = document.createElement("td");
+        tdName.textContent = student.name;
+        tr.appendChild(tdName);
+
+        var tdActions = document.createElement("td");
+        var editButton = document.createElement("button");
+        editButton.textContent = "Edit";
+        editButton.className = "edit-button";
+        editButton.onclick = function() {
+            editStudent(student);
+        };
+        tdActions.appendChild(editButton);
+        tr.appendChild(tdActions);
+
+        tbody.appendChild(tr);
+    }
+
+    function editStudent(student) {
+        document.getElementById("nim").value = student.nim;
+        document.getElementById("name").value = student.name;
+
+        document.getElementById("saveButton").style.display = "none";
+        document.getElementById("updateButton").style.display = "inline-block";
+        document.getElementById("cancelButton").style.display = "inline-block";
+    }
+
+    function updateStudent() {
+        var nim = document.getElementById("nim").value;
+        var name = document.getElementById("name").value;
+
+        var updatedStudent = arrStudent.find(function(student) {
+            return student.nim === nim;
+        });
+
+        if (updatedStudent) {
+            updatedStudent.name = name;
+            updateStudentList();
+        }
+
+        cancelEdit();
+    }
+
+    function cancelEdit() {
+        document.getElementById("studentForm").reset();
+
+        document.getElementById("saveButton").style.display = "inline-block";
+        document.getElementById("updateButton").style.display = "none";
+        document.getElementById("cancelButton").style.display = "none";
+    }
+
+    function updateStudentList() {
+        var tbody = document.querySelector("#studentTable tbody");
+        tbody.innerHTML = "";
+
+        arrStudent.forEach(function(student) {
+            showStudent(student);
+        });
+    }
+</script>
+</body>
+</html>
